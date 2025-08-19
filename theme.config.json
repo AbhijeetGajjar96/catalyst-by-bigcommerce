@@ -1,0 +1,98 @@
+{
+  "tokens": {
+    "maxWidth": 1280,
+    "colors": {
+      "text": "#121212",
+      "muted": "#555555",
+      "accent": "#0f172a",
+      "background": "#FFFFFF",
+      "button": "#121212",
+      "buttonText": "#FFFFFF",
+      "secondaryButton": "#FFFFFF",
+      "secondaryButtonText": "#121212",
+      "shadow": "#121212"
+    },
+    "spacing": {
+      "xs": "0.5rem",
+      "sm": "1rem",
+      "md": "1.5rem",
+      "lg": "2rem",
+      "xl": "3rem",
+      "2xl": "4rem"
+    },
+    "typography": {
+      "fontFamily": {
+        "sans": ["Inter", "system-ui", "sans-serif"],
+        "serif": ["Georgia", "serif"]
+      },
+      "fontSize": {
+        "xs": "0.75rem",
+        "sm": "0.875rem",
+        "base": "1rem",
+        "lg": "1.125rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.875rem",
+        "4xl": "2.25rem"
+      }
+    }
+  },
+  "home": {
+    "sections": [
+      {
+        "type": "hero",
+        "heading": "New Arrivals",
+        "subheading": "Fresh styles for every season",
+        "image": "/assets/hero-banner.jpg",
+        "ctaLabel": "Shop now",
+        "ctaHref": "/demo/collection",
+        "overlayOpacity": 0.3
+      },
+      {
+        "type": "product_grid",
+        "title": "Featured Products",
+        "description": "Discover our most popular items",
+        "columns": 4,
+        "productsToShow": 8
+      },
+      {
+        "type": "image_banner",
+        "image": "/assets/mid-banner.jpg",
+        "heading": "Free Shipping",
+        "subheading": "On orders over $50",
+        "href": "/demo/collection",
+        "textAlignment": "center"
+      },
+      {
+        "type": "rich_text",
+        "html": "<p>Welcome to our store! We offer the latest trends in fashion and lifestyle products. Shop with confidence knowing we provide quality items at competitive prices.</p>"
+      }
+    ]
+  },
+  "navigation": {
+    "mainMenu": [
+      { "label": "Home", "href": "/" },
+      { "label": "Shop", "href": "/demo/collection" },
+      { "label": "About", "href": "/demo/about" },
+      { "label": "Contact", "href": "/demo/contact" }
+    ],
+    "footerLinks": [
+      {
+        "title": "Customer Service",
+        "links": [
+          { "label": "Contact Us", "href": "/demo/contact" },
+          { "label": "Shipping Info", "href": "/demo/shipping" },
+          { "label": "Returns", "href": "/demo/returns" }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          { "label": "About Us", "href": "/demo/about" },
+          { "label": "Careers", "href": "/demo/careers" },
+          { "label": "Privacy Policy", "href": "/demo/privacy" }
+        ]
+      }
+    ]
+  }
+}

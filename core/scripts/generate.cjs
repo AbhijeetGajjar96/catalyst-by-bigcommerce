@@ -21,18 +21,28 @@ const getChannelId = () => {
 };
 
 const getToken = () => {
-  const token = process.env.BIGCOMMERCE_STOREFRONT_TOKEN;
-
-  if (!token) {
-    throw new Error('Missing storefront token');
+  // Try access token first (for GraphQL API)
+  const accessToken = process.env.BIGCOMMERCE_ACCESS_TOKEN;
+  if (accessToken) {
+    return accessToken;
   }
-
+  
+  // Fall back to storefront token
+  const token = process.env.BIGCOMMERCE_STOREFRONT_TOKEN;
+  if (!token) {
+    throw new Error('Missing storefront token or access token');
+  }
   return token;
 };
 
 const getEndpoint = () => {
   const storeHash = getStoreHash();
   const channelId = getChannelId();
+
+  // If using a custom domain (like catalyst-sandbox-vercel.store), try that first
+  if (process.env.BIGCOMMERCE_CUSTOM_DOMAIN) {
+    return `https://${process.env.BIGCOMMERCE_CUSTOM_DOMAIN}/graphql`;
+  }
 
   // Not all sites have the channel-specific canonical URL backfilled.
   // Wait till MSF-2643 is resolved before removing and simplifying the endpoint logic.

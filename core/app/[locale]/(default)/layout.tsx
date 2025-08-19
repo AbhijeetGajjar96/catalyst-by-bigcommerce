@@ -1,27 +1,34 @@
-import { setRequestLocale } from 'next-intl/server';
-import { PropsWithChildren } from 'react';
+import type { Metadata } from 'next'
+import { Montserrat } from 'next/font/google'
 
-import { Footer } from '~/components/footer';
-import { Header } from '~/components/header';
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400','500','600','700'],
+  variable: '--font-body',
+  display: 'swap',
+})
 
-interface Props extends PropsWithChildren {
-  params: Promise<{ locale: string }>;
+export const metadata: Metadata = {
+  title: 'Jay Bharat - Authentic Indian Sweets & Snacks',
+  description: 'Serving authentic Indian sweets & snacks since 1985. Fresh daily, nationwide shipping, 100% vegetarian.',
 }
 
-export default async function DefaultLayout({ params, children }: Props) {
-  const { locale } = await params;
-
-  setRequestLocale(locale);
-
+export default async function RootLayout({ 
+  children, 
+  params 
+}: { 
+  children: React.ReactNode
+  params: { locale: string }
+}) {
   return (
     <>
-      <Header />
+      <a className="skip-to-content-link button visually-hidden" href="#MainContent">
+        Skip to content
+      </a>
+      
+      {children}
 
-      <main>{children}</main>
-
-      <Footer />
+      {/* JavaScript files are loaded in the root layout to avoid duplicates */}
     </>
-  );
+  )
 }
-
-export const experimental_ppr = true;

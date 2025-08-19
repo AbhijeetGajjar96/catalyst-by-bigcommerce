@@ -1,77 +1,108 @@
-import { removeEdgesAndNodes } from '@bigcommerce/catalyst-client';
-import { getFormatter, getTranslations, setRequestLocale } from 'next-intl/server';
+import { HeroSlider } from '../../../components/theme/sections/HeroSlider';
+import { CategoryGrid } from '../../../components/theme/sections/CategoryGrid';
+import { RotatingTextBand } from '../../../components/theme/sections/RotatingTextBand';
+import { OverviewSection } from '../../../components/theme/sections/OverviewSection';
+import { BottomServices } from '../../../components/theme/sections/BottomServices';
+import { CustomerReviews } from '../../../components/theme/sections/CustomerReviews';
+import { Header } from '../../../components/header';
+import { Footer } from '../../../components/footer';
 
-import { Streamable } from '@/vibes/soul/lib/streamable';
-import { FeaturedProductCarousel } from '@/vibes/soul/sections/featured-product-carousel';
-import { FeaturedProductList } from '@/vibes/soul/sections/featured-product-list';
-import { getSessionCustomerAccessToken } from '~/auth';
-import { Subscribe } from '~/components/subscribe';
-import { productCardTransformer } from '~/data-transformers/product-card-transformer';
-import { getPreferredCurrencyCode } from '~/lib/currency';
+// Import the Shopify sections data
+import sectionsData from '../../../lib/shopify/index.sections.json';
 
-import { Slideshow } from './_components/slideshow';
-import { getPageData } from './page-data';
-
-interface Props {
-  params: Promise<{ locale: string }>;
+// TypeScript interfaces for Shopify sections data
+interface SectionBlock {
+  type: string;
+  settings: {
+    image?: string;
+    mobile_image?: string;
+    title?: string;
+    block_description?: string;
+    link?: string;
+    [key: string]: any;
+  };
 }
 
-export default async function Home({ params }: Props) {
-  const { locale } = await params;
+interface Section {
+  type: string;
+  settings: {
+    type?: string;
+    width_type?: string;
+    title?: string;
+    text?: string;
+    [key: string]: any;
+  };
+  blocks?: Record<string, SectionBlock>;
+}
 
-  setRequestLocale(locale);
+interface SectionsData {
+  sections: Record<string, Section>;
+  order: string[];
+}
 
-  const t = await getTranslations('Home');
-  const format = await getFormatter();
+// Cast the imported data to our interface
+const shopifySections = sectionsData as SectionsData;
 
-  const streamablePageData = Streamable.from(async () => {
-    const customerAccessToken = await getSessionCustomerAccessToken();
-    const currencyCode = await getPreferredCurrencyCode();
+// Function to render specific sections based on their purpose
+function renderSpecificSection(sectionId: string, purpose: string) {
+  const section = shopifySections.sections[sectionId];
+  if (!section) return null;
 
-    return getPageData(currencyCode, customerAccessToken);
-  });
+  const blocks = Object.values(section.blocks || []) as any[];
 
-  const streamableFeaturedProducts = Streamable.from(async () => {
-    const data = await streamablePageData;
+  switch (purpose) {
+    case 'hero':
+      return <HeroSlider blocks={blocks} settings={section.settings} />;
+    case 'categories':
+      return <CategoryGrid blocks={blocks} settings={section.settings} />;
+    case 'text-band':
+      return <RotatingTextBand settings={section.settings} />;
+    case 'overview':
+      return <OverviewSection blocks={blocks} settings={section.settings} />;
+    case 'services':
+      return <BottomServices blocks={blocks} settings={section.settings} />;
+    case 'reviews':
+      return <CustomerReviews blocks={blocks} settings={section.settings} />;
+    default:
+      return null;
+  }
+}
 
-    const featuredProducts = removeEdgesAndNodes(data.site.featuredProducts);
-
-    return productCardTransformer(featuredProducts, format);
-  });
-
-  const streamableNewestProducts = Streamable.from(async () => {
-    const data = await streamablePageData;
-
-    const newestProducts = removeEdgesAndNodes(data.site.newestProducts);
-
-    return productCardTransformer(newestProducts, format);
-  });
+export default function HomePage() {
+  // Define page sections with their specific purposes
+  const pageSections = [
+    { id: 'ys_custom_gallery_HJP3FA', purpose: 'hero', name: 'Hero Slider' },
+    { id: 'ys_custom_gallery_tELG8t', purpose: 'categories', name: 'Category Grid' },
+    { id: 'custom_liquid_HCciGk', purpose: 'text-band', name: 'Rotating Text Band' },
+    { id: 'ys_custom_gallery_xb8dwx', purpose: 'overview', name: 'Overview Section' },
+    { id: 'ys_custom_gallery_gF9DUX', purpose: 'services', name: 'Bottom Services' },
+    { id: 'ys_custom_gallery_7Pif7p', purpose: 'reviews', name: 'Customer Reviews' }
+  ];
 
   return (
     <>
-      <Slideshow />
-
-      <FeaturedProductList
-        cta={{ label: t('FeaturedProducts.cta'), href: '/shop-all' }}
-        description={t('FeaturedProducts.description')}
-        emptyStateSubtitle={t('FeaturedProducts.emptyStateSubtitle')}
-        emptyStateTitle={t('FeaturedProducts.emptyStateTitle')}
-        products={streamableFeaturedProducts}
-        title={t('FeaturedProducts.title')}
-      />
-
-      <FeaturedProductCarousel
-        cta={{ label: t('NewestProducts.cta'), href: '/shop-all/?sort=newest' }}
-        description={t('NewestProducts.description')}
-        emptyStateSubtitle={t('NewestProducts.emptyStateSubtitle')}
-        emptyStateTitle={t('NewestProducts.emptyStateTitle')}
-        nextLabel={t('NewestProducts.nextProducts')}
-        previousLabel={t('NewestProducts.previousProducts')}
-        products={streamableNewestProducts}
-        title={t('NewestProducts.title')}
-      />
-
-      <Subscribe />
+      {/* Header Component */}
+      <Header />
+      
+      {/* Main Content */}
+      <main className="min-h-screen">
+        {/* Page Sections */}
+        {pageSections.map((section, index) => (
+          <section 
+            key={section.id} 
+            className="section-wrapper"
+            style={{
+              marginTop: index === 0 ? '0' : 'var(--spacing-sections-desktop)',
+              marginBottom: index === pageSections.length - 1 ? '0' : 'var(--spacing-sections-desktop)'
+            }}
+          >
+            {renderSpecificSection(section.id, section.purpose)}
+          </section>
+        ))}
+      </main>
+      
+      {/* Footer Component */}
+      <Footer />
     </>
   );
 }
